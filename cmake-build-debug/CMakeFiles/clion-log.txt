@@ -1,0 +1,4 @@
+/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/dongbo/CLionProjects/nginx
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/dongbo/CLionProjects/nginx/cmake-build-debug
