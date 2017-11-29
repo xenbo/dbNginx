@@ -53,8 +53,7 @@ ngx_cycle_modules(ngx_cycle_t *cycle)
         return NGX_ERROR;
     }
 
-    ngx_memcpy(cycle->modules, ngx_modules,
-               ngx_modules_n * sizeof(ngx_module_t *));
+    ngx_memcpy(cycle->modules, ngx_modules, ngx_modules_n * sizeof(ngx_module_t *));
 
     cycle->modules_n = ngx_modules_n;
 
@@ -69,6 +68,7 @@ ngx_init_modules(ngx_cycle_t *cycle)
 
     for (i = 0; cycle->modules[i]; i++) {
         if (cycle->modules[i]->init_module) {
+            printf("ngx_module_s init_module name:%s \n",cycle->modules[i]->name);
             if (cycle->modules[i]->init_module(cycle) != NGX_OK) {
                 return NGX_ERROR;
             }

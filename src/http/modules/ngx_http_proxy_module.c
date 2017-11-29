@@ -2796,8 +2796,7 @@ ngx_http_proxy_create_main_conf(ngx_conf_t *cf)
     }
 
 #if (NGX_HTTP_CACHE)
-    if (ngx_array_init(&conf->caches, cf->pool, 4,
-                       sizeof(ngx_http_file_cache_t *))
+    if (ngx_array_init(&conf->caches, cf->pool, 4, sizeof(ngx_http_file_cache_t *))
         != NGX_OK)
     {
         return NULL;

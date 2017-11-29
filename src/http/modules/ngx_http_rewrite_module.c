@@ -21,24 +21,16 @@ typedef struct {
 
 
 static void *ngx_http_rewrite_create_loc_conf(ngx_conf_t *cf);
-static char *ngx_http_rewrite_merge_loc_conf(ngx_conf_t *cf,
-    void *parent, void *child);
+static char *ngx_http_rewrite_merge_loc_conf(ngx_conf_t *cf, void *parent, void *child);
 static ngx_int_t ngx_http_rewrite_init(ngx_conf_t *cf);
 static char *ngx_http_rewrite(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
-static char *ngx_http_rewrite_return(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
-static char *ngx_http_rewrite_break(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
-static char *ngx_http_rewrite_if(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
-static char * ngx_http_rewrite_if_condition(ngx_conf_t *cf,
-    ngx_http_rewrite_loc_conf_t *lcf);
-static char *ngx_http_rewrite_variable(ngx_conf_t *cf,
-    ngx_http_rewrite_loc_conf_t *lcf, ngx_str_t *value);
-static char *ngx_http_rewrite_set(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
-static char * ngx_http_rewrite_value(ngx_conf_t *cf,
-    ngx_http_rewrite_loc_conf_t *lcf, ngx_str_t *value);
+static char *ngx_http_rewrite_return(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
+static char *ngx_http_rewrite_break(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
+static char *ngx_http_rewrite_if(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
+static char * ngx_http_rewrite_if_condition(ngx_conf_t *cf, ngx_http_rewrite_loc_conf_t *lcf);
+static char *ngx_http_rewrite_variable(ngx_conf_t *cf, ngx_http_rewrite_loc_conf_t *lcf, ngx_str_t *value);
+static char *ngx_http_rewrite_set(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
+static char * ngx_http_rewrite_value(ngx_conf_t *cf, ngx_http_rewrite_loc_conf_t *lcf, ngx_str_t *value);
 
 
 static ngx_command_t  ngx_http_rewrite_commands[] = {

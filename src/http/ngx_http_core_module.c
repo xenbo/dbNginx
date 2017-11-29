@@ -3186,12 +3186,10 @@ ngx_http_core_init_main_conf(ngx_conf_t *cf, void *conf)
     ngx_http_core_main_conf_t *cmcf = conf;
 
     ngx_conf_init_uint_value(cmcf->server_names_hash_max_size, 512);
-    ngx_conf_init_uint_value(cmcf->server_names_hash_bucket_size,
-                             ngx_cacheline_size);
+    ngx_conf_init_uint_value(cmcf->server_names_hash_bucket_size, ngx_cacheline_size);
 
     cmcf->server_names_hash_bucket_size =
             ngx_align(cmcf->server_names_hash_bucket_size, ngx_cacheline_size);
-
 
     ngx_conf_init_uint_value(cmcf->variables_hash_max_size, 1024);
     ngx_conf_init_uint_value(cmcf->variables_hash_bucket_size, 64);
@@ -3241,7 +3239,7 @@ ngx_http_core_create_srv_conf(ngx_conf_t *cf)
     return cscf;
 }
 
-
+//ngx_http_merge_servers
 static char *
 ngx_http_core_merge_srv_conf(ngx_conf_t *cf, void *parent, void *child)
 {
@@ -3262,8 +3260,7 @@ ngx_http_core_merge_srv_conf(ngx_conf_t *cf, void *parent, void *child)
     ngx_conf_merge_size_value(conf->client_header_buffer_size,
                               prev->client_header_buffer_size, 1024);
     ngx_conf_merge_bufs_value(conf->large_client_header_buffers,
-                              prev->large_client_header_buffers,
-                              4, 8192);
+                              prev->large_client_header_buffers, 4, 8192);
 
     if (conf->large_client_header_buffers.size < conf->connection_pool_size) {
         ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,
@@ -3709,7 +3706,7 @@ ngx_http_core_merge_loc_conf(ngx_conf_t *cf, void *parent, void *child)
                              prev->disable_symlinks_from, NULL);
 #endif
 
-    return NGX_CONF_OK;
+     return NGX_CONF_OK;
 }
 
 

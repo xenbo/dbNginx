@@ -948,8 +948,7 @@ ngx_http_process_request_line(ngx_event_t *rev)
     c = rev->data;
     r = c->data;
 
-    ngx_log_debug0(NGX_LOG_DEBUG_HTTP, rev->log, 0,
-                   "http process request line");
+    ngx_log_debug0(NGX_LOG_DEBUG_HTTP, rev->log, 0, "http process request line");
 
     if (rev->timedout) {
         ngx_log_error(NGX_LOG_INFO, c->log, NGX_ETIMEDOUT, "client timed out");
@@ -1023,8 +1022,7 @@ ngx_http_process_request_line(ngx_event_t *rev)
             if (r->http_version < NGX_HTTP_VERSION_10) {
 
                 if (r->headers_in.server.len == 0
-                    && ngx_http_set_virtual_server(r, &r->headers_in.server)
-                       == NGX_ERROR)
+                    && ngx_http_set_virtual_server(r, &r->headers_in.server) == NGX_ERROR)
                 {
                     return;
                 }
@@ -1035,8 +1033,7 @@ ngx_http_process_request_line(ngx_event_t *rev)
 
 
             if (ngx_list_init(&r->headers_in.headers, r->pool, 20,
-                              sizeof(ngx_table_elt_t))
-                != NGX_OK)
+                              sizeof(ngx_table_elt_t)) != NGX_OK)
             {
                 ngx_http_close_request(r, NGX_HTTP_INTERNAL_SERVER_ERROR);
                 return;
@@ -1082,8 +1079,7 @@ ngx_http_process_request_line(ngx_event_t *rev)
                 r->request_line.len = r->header_in->end - r->request_start;
                 r->request_line.data = r->request_start;
 
-                ngx_log_error(NGX_LOG_INFO, c->log, 0,
-                              "client sent too long URI");
+                ngx_log_error(NGX_LOG_INFO, c->log, 0, "client sent too long URI");
                 ngx_http_finalize_request(r, NGX_HTTP_REQUEST_URI_TOO_LARGE);
                 return;
             }
@@ -1292,8 +1288,7 @@ ngx_http_process_request_headers(ngx_event_t *rev)
         /* the host header could change the server configuration context */
         cscf = ngx_http_get_module_srv_conf(r, ngx_http_core_module);
 
-        rc = ngx_http_parse_header_line(r, r->header_in,
-                                        cscf->underscores_in_headers);
+        rc = ngx_http_parse_header_line(r, r->header_in, cscf->underscores_in_headers);
 
         if (rc == NGX_OK) {
 
@@ -1413,8 +1408,7 @@ ngx_http_read_request_header(ngx_http_request_t *r)
     }
 
     if (rev->ready) {
-        n = c->recv(c, r->header_in->last,
-                    r->header_in->end - r->header_in->last);
+        n = c->recv(c, r->header_in->last, r->header_in->end - r->header_in->last);
     } else {
         n = NGX_AGAIN;
     }
@@ -1434,8 +1428,7 @@ ngx_http_read_request_header(ngx_http_request_t *r)
     }
 
     if (n == 0) {
-        ngx_log_error(NGX_LOG_INFO, c->log, 0,
-                      "client prematurely closed connection");
+        ngx_log_error(NGX_LOG_INFO, c->log, 0, "client prematurely closed connection");
     }
 
     if (n == 0 || n == NGX_ERROR) {

@@ -7,6 +7,7 @@
 
 #include <ngx_config.h>
 #include <ngx_core.h>
+#include "ngx_string.h"
 
 
 static char *ngx_error_log(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
@@ -468,8 +469,10 @@ ngx_log_get_file_log(ngx_log_t *head)
 {
     ngx_log_t  *log;
 
+
     for (log = head; log; log = log->next) {
         if (log->file != NULL) {
+            printf("log name:%s\n",log->file->name.data);
             return log;
         }
     }

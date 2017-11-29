@@ -7,6 +7,7 @@
 
 #include <ngx_config.h>
 #include <ngx_core.h>
+#include "ngx_string.h"
 
 #define NGX_CONF_BUFFER  4096
 
@@ -314,7 +315,6 @@ ngx_conf_parse(ngx_conf_t *cf, ngx_str_t *filename)
             goto failed;
         }
 
-
         rc = ngx_conf_handler(cf, rc);
 
         if (rc == NGX_ERROR) {
@@ -365,7 +365,6 @@ ngx_conf_handler(ngx_conf_t *cf, ngx_int_t last)
     found = 0;
 
     for (i = 0; cf->cycle->modules[i]; i++) {
-
         cmd = cf->cycle->modules[i]->commands;
         if (cmd == NULL) {
             continue;
@@ -397,21 +396,19 @@ ngx_conf_handler(ngx_conf_t *cf, ngx_int_t last)
 
             if (!(cmd->type & NGX_CONF_BLOCK) && last != NGX_OK) {
                 ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,
-                                  "directive \"%s\" is not terminated by \";\"",
-                                  name->data);
+                                  "directive \"%s\" is not terminated by \";\"", name->data);
                 return NGX_ERROR;
             }
 
             if ((cmd->type & NGX_CONF_BLOCK) && last != NGX_CONF_BLOCK_START) {
                 ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,
-                                   "directive \"%s\" has no opening \"{\"",
-                                   name->data);
+                                   "directive \"%s\" has no opening \"{\"", name->data);
                 return NGX_ERROR;
             }
 
             /* is the directive's argument count right ? */
 
-            if (!(cmd->type & NGX_CONF_ANY)) {
+             if (!(cmd->type & NGX_CONF_ANY)) {
 
                 if (cmd->type & NGX_CONF_FLAG) {
 
@@ -459,6 +456,7 @@ ngx_conf_handler(ngx_conf_t *cf, ngx_int_t last)
                 }
             }
 
+            printf("ngx_command_t name set():%s\n",cmd->name.data);
             rv = cmd->set(cf, cmd, conf);
 
             if (rv == NGX_CONF_OK) {
@@ -469,8 +467,7 @@ ngx_conf_handler(ngx_conf_t *cf, ngx_int_t last)
                 return NGX_ERROR;
             }
 
-            ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,
-                               "\"%s\" directive %s", name->data, rv);
+            ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "\"%s\" directive %s", name->data, rv);
 
             return NGX_ERROR;
         }

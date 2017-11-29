@@ -6315,9 +6315,7 @@ ngx_http_upstream_init_main_conf(ngx_conf_t *cf, void *conf)
 
     /* upstream_headers_in_hash */
 
-    if (ngx_array_init(&headers_in, cf->temp_pool, 32, sizeof(ngx_hash_key_t))
-        != NGX_OK)
-    {
+    if (ngx_array_init(&headers_in, cf->temp_pool, 32, sizeof(ngx_hash_key_t)) != NGX_OK) {
         return NGX_CONF_ERROR;
     }
 

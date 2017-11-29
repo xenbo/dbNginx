@@ -238,8 +238,7 @@ ngx_master_process_cycle(ngx_cycle_t *cycle)
             }
 
             ngx_cycle = cycle;
-            ccf = (ngx_core_conf_t *) ngx_get_conf(cycle->conf_ctx,
-                                                   ngx_core_module);
+            ccf = (ngx_core_conf_t *) ngx_get_conf(cycle->conf_ctx, ngx_core_module);
             ngx_start_worker_processes(cycle, ccf->worker_processes,
                                        NGX_PROCESS_JUST_RESPAWN);
             ngx_start_cache_manager_processes(cycle, 1);
@@ -296,6 +295,8 @@ ngx_single_process_cycle(ngx_cycle_t *cycle)
 
     for (i = 0; cycle->modules[i]; i++) {
         if (cycle->modules[i]->init_process) {
+            // 1 ngx_event_process_init
+            // 2 ngx_http_userid_init_worker
             if (cycle->modules[i]->init_process(cycle) == NGX_ERROR) {
                 /* fatal */
                 exit(2);

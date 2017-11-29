@@ -132,8 +132,7 @@ struct ngx_conf_s {
 };
 
 
-typedef char *(*ngx_conf_post_handler_pt) (ngx_conf_t *cf,
-    void *data, void *conf);
+typedef char *(*ngx_conf_post_handler_pt) (ngx_conf_t *cf, void *data, void *conf);
 
 typedef struct {
     ngx_conf_post_handler_pt  post_handler;

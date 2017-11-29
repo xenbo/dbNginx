@@ -109,8 +109,7 @@ ngx_event_no_timers_left(void)
         return NGX_OK;
     }
 
-    for (node = ngx_rbtree_min(root, sentinel);
-         node;
+    for (node = ngx_rbtree_min(root, sentinel); node;
          node = ngx_rbtree_next(&ngx_event_timer_rbtree, node))
     {
         ev = (ngx_event_t *) ((char *) node - offsetof(ngx_event_t, timer));

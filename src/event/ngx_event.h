@@ -76,43 +76,9 @@ struct ngx_event_s {
 
     unsigned         cancelable:1;
 
-#if (NGX_HAVE_KQUEUE)
-    unsigned         kq_vnode:1;
-
-    /* the pending errno reported by kqueue */
-    int              kq_errno;
-#endif
-
-    /*
-     * kqueue only:
-     *   accept:     number of sockets that wait to be accepted
-     *   read:       bytes to read when event is ready
-     *               or lowat when event is set with NGX_LOWAT_EVENT flag
-     *   write:      available space in buffer when event is ready
-     *               or lowat when event is set with NGX_LOWAT_EVENT flag
-     *
-     * epoll with EPOLLRDHUP:
-     *   accept:     1 if accept many, 0 otherwise
-     *   read:       1 if there can be data to read, 0 otherwise
-     *
-     * iocp: TODO
-     *
-     * otherwise:
-     *   accept:     1 if accept many, 0 otherwise
-     */
-
-#if (NGX_HAVE_KQUEUE) || (NGX_HAVE_IOCP)
-    int              available;
-#else
     unsigned         available:1;
-#endif
 
     ngx_event_handler_pt  handler;
-
-
-#if (NGX_HAVE_IOCP)
-    ngx_event_ovlp_t ovlp;
-#endif
 
     ngx_uint_t       index;
 
@@ -122,26 +88,6 @@ struct ngx_event_s {
 
     /* the posted queue */
     ngx_queue_t      queue;
-
-#if 0
-
-    /* the threads support */
-
-    /*
-     * the event thread context, we store it here
-     * if $(CC) does not understand __thread declaration
-     * and pthread_getspecific() is too costly
-     */
-
-    void            *thr_ctx;
-
-#if (NGX_EVENT_T_PADDING)
-
-    /* event should not cross cache line in SMP */
-
-    uint32_t         padding[NGX_EVENT_T_PADDING];
-#endif
-#endif
 };
 
 

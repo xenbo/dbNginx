@@ -343,17 +343,17 @@ main(int argc, char *const *argv)
         return 1;
     }
 
-    if (!ngx_inherited && ccf->daemon) {
-        if (ngx_daemon(cycle->log) != NGX_OK) {
-            return 1;
-        }
-
-        ngx_daemonized = 1;
-    }
-
-    if (ngx_inherited) {
-        ngx_daemonized = 1;
-    }
+//    if (!ngx_inherited && ccf->daemon) {
+//        if (ngx_daemon(cycle->log) != NGX_OK) {
+//            return 1;
+//        }
+//
+//        ngx_daemonized = 1;
+//    }
+//
+//    if (ngx_inherited) {
+//        ngx_daemonized = 1;
+//    }
 
 #endif
 
@@ -374,12 +374,12 @@ main(int argc, char *const *argv)
 
     ngx_use_stderr = 0;
 
-    if (ngx_process == NGX_PROCESS_SINGLE) {
+//    if (ngx_process == NGX_PROCESS_SINGLE) {
         ngx_single_process_cycle(cycle);
-
-    } else {
-        ngx_master_process_cycle(cycle);
-    }
+//
+//    } else {
+//        ngx_master_process_cycle(cycle);
+//    }
 
     return 0;
 }
@@ -524,8 +524,7 @@ ngx_set_environment(ngx_cycle_t *cycle, ngx_uint_t *last)
     var = ccf->env.elts;
 
     for (i = 0; i < ccf->env.nelts; i++) {
-        if (ngx_strcmp(var[i].data, "TZ") == 0
-            || ngx_strncmp(var[i].data, "TZ=", 3) == 0)
+        if (ngx_strcmp(var[i].data, "TZ") == 0 || ngx_strncmp(var[i].data, "TZ=", 3) == 0)
         {
             goto tz_found;
         }
@@ -1159,15 +1158,13 @@ ngx_core_module_init_conf(ngx_cycle_t *cycle, void *conf)
 
     } else {
         cycle->lock_file.len = ccf->lock_file.len + 1;
-        cycle->lock_file.data = ngx_pnalloc(cycle->pool,
-                                      ccf->lock_file.len + sizeof(".accept"));
+        cycle->lock_file.data = ngx_pnalloc(cycle->pool, ccf->lock_file.len + sizeof(".accept"));
         if (cycle->lock_file.data == NULL) {
             return NGX_CONF_ERROR;
         }
 
         ngx_memcpy(ngx_cpymem(cycle->lock_file.data, ccf->lock_file.data,
-                              ccf->lock_file.len),
-                   ".accept", sizeof(".accept"));
+                              ccf->lock_file.len), ".accept", sizeof(".accept"));
     }
     }
 
@@ -1418,8 +1415,7 @@ ngx_get_cpu_affinity(ngx_uint_t n)
 
     static ngx_cpuset_t  result;
 
-    ccf = (ngx_core_conf_t *) ngx_get_conf(ngx_cycle->conf_ctx,
-                                           ngx_core_module);
+    ccf = (ngx_core_conf_t *) ngx_get_conf(ngx_cycle->conf_ctx, ngx_core_module);
 
     if (ccf->cpu_affinity == NULL) {
         return NULL;
@@ -1556,8 +1552,7 @@ ngx_load_module(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
             return NGX_CONF_ERROR;
         }
 
-        ngx_log_debug2(NGX_LOG_DEBUG_CORE, cf->log, 0, "module: %s i:%ui",
-                       module->name, module->index);
+        ngx_log_debug2(NGX_LOG_DEBUG_CORE, cf->log, 0, "module: %s i:%ui", module->name, module->index);
     }
 
     return NGX_CONF_OK;

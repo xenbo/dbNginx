@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.8)
 project(nginx)
 
 set(CMAKE_C_STANDARD 99)
@@ -19,8 +19,7 @@ AUX_SOURCE_DIRECTORY(src/http/modules SRC)
 AUX_SOURCE_DIRECTORY(src/os/unix SRC)
 AUX_SOURCE_DIRECTORY(src/objs SRC)
 
-
-
 set(SOURCE_FILES ${SRC})
 add_executable(nginx ${SOURCE_FILES})
-target_link_libraries(nginx dl pthread crypt pcre z)
+
+target_link_libraries(nginx dl pthread crypt pcre ssl crypto dl z )

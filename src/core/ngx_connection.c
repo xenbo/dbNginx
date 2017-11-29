@@ -10,7 +10,7 @@
 #include <ngx_event.h>
 
 
-ngx_os_io_t  ngx_io;
+ngx_os_io_t ngx_io;
 
 
 static void ngx_drain_connections(ngx_cycle_t *cycle);
@@ -18,12 +18,11 @@ static void ngx_drain_connections(ngx_cycle_t *cycle);
 
 ngx_listening_t *
 ngx_create_listening(ngx_conf_t *cf, struct sockaddr *sockaddr,
-    socklen_t socklen)
-{
-    size_t            len;
-    ngx_listening_t  *ls;
-    struct sockaddr  *sa;
-    u_char            text[NGX_SOCKADDR_STRLEN];
+                     socklen_t socklen) {
+    size_t len;
+    ngx_listening_t *ls;
+    struct sockaddr *sa;
+    u_char text[NGX_SOCKADDR_STRLEN];
 
     ls = ngx_array_push(&cf->cycle->listening);
     if (ls == NULL) {
@@ -47,22 +46,22 @@ ngx_create_listening(ngx_conf_t *cf, struct sockaddr *sockaddr,
 
     switch (ls->sockaddr->sa_family) {
 #if (NGX_HAVE_INET6)
-    case AF_INET6:
-        ls->addr_text_max_len = NGX_INET6_ADDRSTRLEN;
-        break;
+        case AF_INET6:
+            ls->addr_text_max_len = NGX_INET6_ADDRSTRLEN;
+            break;
 #endif
 #if (NGX_HAVE_UNIX_DOMAIN)
-    case AF_UNIX:
-        ls->addr_text_max_len = NGX_UNIX_ADDRSTRLEN;
-        len++;
-        break;
+        case AF_UNIX:
+            ls->addr_text_max_len = NGX_UNIX_ADDRSTRLEN;
+            len++;
+            break;
 #endif
-    case AF_INET:
-        ls->addr_text_max_len = NGX_INET_ADDRSTRLEN;
-        break;
-    default:
-        ls->addr_text_max_len = NGX_SOCKADDR_STRLEN;
-        break;
+        case AF_INET:
+            ls->addr_text_max_len = NGX_INET_ADDRSTRLEN;
+            break;
+        default:
+            ls->addr_text_max_len = NGX_SOCKADDR_STRLEN;
+            break;
     }
 
     ls->addr_text.data = ngx_pnalloc(cf->pool, len);
@@ -92,13 +91,12 @@ ngx_create_listening(ngx_conf_t *cf, struct sockaddr *sockaddr,
 
 
 ngx_int_t
-ngx_clone_listening(ngx_conf_t *cf, ngx_listening_t *ls)
-{
+ngx_clone_listening(ngx_conf_t *cf, ngx_listening_t *ls) {
 #if (NGX_HAVE_REUSEPORT)
 
-    ngx_int_t         n;
-    ngx_core_conf_t  *ccf;
-    ngx_listening_t   ols;
+    ngx_int_t n;
+    ngx_core_conf_t *ccf;
+    ngx_listening_t ols;
 
     if (!ls->reuseport) {
         return NGX_OK;
@@ -106,8 +104,7 @@ ngx_clone_listening(ngx_conf_t *cf, ngx_listening_t *ls)
 
     ols = *ls;
 
-    ccf = (ngx_core_conf_t *) ngx_get_conf(cf->cycle->conf_ctx,
-                                           ngx_core_module);
+    ccf = (ngx_core_conf_t *) ngx_get_conf(cf->cycle->conf_ctx, ngx_core_module);
 
     for (n = 1; n < ccf->worker_processes; n++) {
 
@@ -129,23 +126,22 @@ ngx_clone_listening(ngx_conf_t *cf, ngx_listening_t *ls)
 
 
 ngx_int_t
-ngx_set_inherited_sockets(ngx_cycle_t *cycle)
-{
-    size_t                     len;
-    ngx_uint_t                 i;
-    ngx_listening_t           *ls;
-    socklen_t                  olen;
+ngx_set_inherited_sockets(ngx_cycle_t *cycle) {
+    size_t len;
+    ngx_uint_t i;
+    ngx_listening_t *ls;
+    socklen_t olen;
 #if (NGX_HAVE_DEFERRED_ACCEPT || NGX_HAVE_TCP_FASTOPEN)
-    ngx_err_t                  err;
+    ngx_err_t err;
 #endif
 #if (NGX_HAVE_DEFERRED_ACCEPT && defined SO_ACCEPTFILTER)
     struct accept_filter_arg   af;
 #endif
 #if (NGX_HAVE_DEFERRED_ACCEPT && defined TCP_DEFER_ACCEPT)
-    int                        timeout;
+    int timeout;
 #endif
 #if (NGX_HAVE_REUSEPORT)
-    int                        reuseport;
+    int reuseport;
 #endif
 
     ls = cycle->listening.elts;
@@ -160,7 +156,7 @@ ngx_set_inherited_sockets(ngx_cycle_t *cycle)
         if (getsockname(ls[i].fd, ls[i].sockaddr, &ls[i].socklen) == -1) {
             ngx_log_error(NGX_LOG_CRIT, cycle->log, ngx_socket_errno,
                           "getsockname() of the inherited "
-                          "socket #%d failed", ls[i].fd);
+                                  "socket #%d failed", ls[i].fd);
             ls[i].ignore = 1;
             continue;
         }
@@ -168,30 +164,30 @@ ngx_set_inherited_sockets(ngx_cycle_t *cycle)
         switch (ls[i].sockaddr->sa_family) {
 
 #if (NGX_HAVE_INET6)
-        case AF_INET6:
-            ls[i].addr_text_max_len = NGX_INET6_ADDRSTRLEN;
-            len = NGX_INET6_ADDRSTRLEN + sizeof("[]:65535") - 1;
-            break;
+            case AF_INET6:
+                ls[i].addr_text_max_len = NGX_INET6_ADDRSTRLEN;
+                len = NGX_INET6_ADDRSTRLEN + sizeof("[]:65535") - 1;
+                break;
 #endif
 
 #if (NGX_HAVE_UNIX_DOMAIN)
-        case AF_UNIX:
-            ls[i].addr_text_max_len = NGX_UNIX_ADDRSTRLEN;
-            len = NGX_UNIX_ADDRSTRLEN;
-            break;
+            case AF_UNIX:
+                ls[i].addr_text_max_len = NGX_UNIX_ADDRSTRLEN;
+                len = NGX_UNIX_ADDRSTRLEN;
+                break;
 #endif
 
-        case AF_INET:
-            ls[i].addr_text_max_len = NGX_INET_ADDRSTRLEN;
-            len = NGX_INET_ADDRSTRLEN + sizeof(":65535") - 1;
-            break;
+            case AF_INET:
+                ls[i].addr_text_max_len = NGX_INET_ADDRSTRLEN;
+                len = NGX_INET_ADDRSTRLEN + sizeof(":65535") - 1;
+                break;
 
-        default:
-            ngx_log_error(NGX_LOG_CRIT, cycle->log, ngx_socket_errno,
-                          "the inherited socket #%d has "
-                          "an unsupported protocol family", ls[i].fd);
-            ls[i].ignore = 1;
-            continue;
+            default:
+                ngx_log_error(NGX_LOG_CRIT, cycle->log, ngx_socket_errno,
+                              "the inherited socket #%d has "
+                                      "an unsupported protocol family", ls[i].fd);
+                ls[i].ignore = 1;
+                continue;
         }
 
         ls[i].addr_text.data = ngx_pnalloc(cycle->pool, len);
@@ -213,8 +209,7 @@ ngx_set_inherited_sockets(ngx_cycle_t *cycle)
 
         if (getsockopt(ls[i].fd, SOL_SOCKET, SO_TYPE, (void *) &ls[i].type,
                        &olen)
-            == -1)
-        {
+            == -1) {
             ngx_log_error(NGX_LOG_CRIT, cycle->log, ngx_socket_errno,
                           "getsockopt(SO_TYPE) %V failed", &ls[i].addr_text);
             ls[i].ignore = 1;
@@ -225,8 +220,7 @@ ngx_set_inherited_sockets(ngx_cycle_t *cycle)
 
         if (getsockopt(ls[i].fd, SOL_SOCKET, SO_RCVBUF, (void *) &ls[i].rcvbuf,
                        &olen)
-            == -1)
-        {
+            == -1) {
             ngx_log_error(NGX_LOG_ALERT, cycle->log, ngx_socket_errno,
                           "getsockopt(SO_RCVBUF) %V failed, ignored",
                           &ls[i].addr_text);
@@ -238,8 +232,7 @@ ngx_set_inherited_sockets(ngx_cycle_t *cycle)
 
         if (getsockopt(ls[i].fd, SOL_SOCKET, SO_SNDBUF, (void *) &ls[i].sndbuf,
                        &olen)
-            == -1)
-        {
+            == -1) {
             ngx_log_error(NGX_LOG_ALERT, cycle->log, ngx_socket_errno,
                           "getsockopt(SO_SNDBUF) %V failed, ignored",
                           &ls[i].addr_text);
@@ -275,8 +268,7 @@ ngx_set_inherited_sockets(ngx_cycle_t *cycle)
 
         if (getsockopt(ls[i].fd, SOL_SOCKET, SO_REUSEPORT,
                        (void *) &reuseport, &olen)
-            == -1)
-        {
+            == -1) {
             ngx_log_error(NGX_LOG_ALERT, cycle->log, ngx_socket_errno,
                           "getsockopt(SO_REUSEPORT) %V failed, ignored",
                           &ls[i].addr_text);
@@ -297,8 +289,7 @@ ngx_set_inherited_sockets(ngx_cycle_t *cycle)
 
         if (getsockopt(ls[i].fd, IPPROTO_TCP, TCP_FASTOPEN,
                        (void *) &ls[i].fastopen, &olen)
-            == -1)
-        {
+            == -1) {
             err = ngx_socket_errno;
 
             if (err != NGX_EOPNOTSUPP && err != NGX_ENOPROTOOPT) {
@@ -351,8 +342,7 @@ ngx_set_inherited_sockets(ngx_cycle_t *cycle)
         olen = sizeof(int);
 
         if (getsockopt(ls[i].fd, IPPROTO_TCP, TCP_DEFER_ACCEPT, &timeout, &olen)
-            == -1)
-        {
+            == -1) {
             err = ngx_socket_errno;
 
             if (err == NGX_EOPNOTSUPP) {
@@ -378,14 +368,13 @@ ngx_set_inherited_sockets(ngx_cycle_t *cycle)
 
 
 ngx_int_t
-ngx_open_listening_sockets(ngx_cycle_t *cycle)
-{
-    int               reuseaddr;
-    ngx_uint_t        i, tries, failed;
-    ngx_err_t         err;
-    ngx_log_t        *log;
-    ngx_socket_t      s;
-    ngx_listening_t  *ls;
+ngx_open_listening_sockets(ngx_cycle_t *cycle) {
+    int reuseaddr;
+    ngx_uint_t i, tries, failed;
+    ngx_err_t err;
+    ngx_log_t *log;
+    ngx_socket_t s;
+    ngx_listening_t *ls;
 
     reuseaddr = 1;
 #if (NGX_SUPPRESS_WARN)
@@ -418,15 +407,12 @@ ngx_open_listening_sockets(ngx_cycle_t *cycle)
                  * SO_REUSEPORT on the old socket before opening new ones
                  */
 
-                int  reuseport = 1;
+                int reuseport = 1;
 
                 if (setsockopt(ls[i].fd, SOL_SOCKET, SO_REUSEPORT,
-                               (const void *) &reuseport, sizeof(int))
-                    == -1)
-                {
+                               (const void *) &reuseport, sizeof(int)) == -1) {
                     ngx_log_error(NGX_LOG_ALERT, cycle->log, ngx_socket_errno,
-                                  "setsockopt(SO_REUSEPORT) %V failed, ignored",
-                                  &ls[i].addr_text);
+                                  "setsockopt(SO_REUSEPORT) %V failed, ignored", &ls[i].addr_text);
                 }
 
                 ls[i].add_reuseport = 0;
@@ -450,22 +436,20 @@ ngx_open_listening_sockets(ngx_cycle_t *cycle)
 
             if (s == (ngx_socket_t) -1) {
                 ngx_log_error(NGX_LOG_EMERG, log, ngx_socket_errno,
-                              ngx_socket_n " %V failed", &ls[i].addr_text);
+                              ngx_socket_n
+                                      " %V failed", &ls[i].addr_text);
                 return NGX_ERROR;
             }
 
             if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR,
-                           (const void *) &reuseaddr, sizeof(int))
-                == -1)
-            {
+                           (const void *) &reuseaddr, sizeof(int)) == -1) {
                 ngx_log_error(NGX_LOG_EMERG, log, ngx_socket_errno,
-                              "setsockopt(SO_REUSEADDR) %V failed",
-                              &ls[i].addr_text);
+                              "setsockopt(SO_REUSEADDR) %V failed", &ls[i].addr_text);
 
                 if (ngx_close_socket(s) == -1) {
                     ngx_log_error(NGX_LOG_EMERG, log, ngx_socket_errno,
-                                  ngx_close_socket_n " %V failed",
-                                  &ls[i].addr_text);
+                                  ngx_close_socket_n
+                                          " %V failed", &ls[i].addr_text);
                 }
 
                 return NGX_ERROR;
@@ -474,22 +458,19 @@ ngx_open_listening_sockets(ngx_cycle_t *cycle)
 #if (NGX_HAVE_REUSEPORT)
 
             if (ls[i].reuseport && !ngx_test_config) {
-                int  reuseport;
+                int reuseport;
 
                 reuseport = 1;
 
                 if (setsockopt(s, SOL_SOCKET, SO_REUSEPORT,
-                               (const void *) &reuseport, sizeof(int))
-                    == -1)
-                {
+                               (const void *) &reuseport, sizeof(int)) == -1) {
                     ngx_log_error(NGX_LOG_EMERG, log, ngx_socket_errno,
-                                  "setsockopt(SO_REUSEPORT) %V failed",
-                                  &ls[i].addr_text);
+                                  "setsockopt(SO_REUSEPORT) %V failed", &ls[i].addr_text);
 
                     if (ngx_close_socket(s) == -1) {
                         ngx_log_error(NGX_LOG_EMERG, log, ngx_socket_errno,
-                                      ngx_close_socket_n " %V failed",
-                                      &ls[i].addr_text);
+                                      ngx_close_socket_n
+                                              " %V failed", &ls[i].addr_text);
                     }
 
                     return NGX_ERROR;
@@ -500,14 +481,13 @@ ngx_open_listening_sockets(ngx_cycle_t *cycle)
 #if (NGX_HAVE_INET6 && defined IPV6_V6ONLY)
 
             if (ls[i].sockaddr->sa_family == AF_INET6) {
-                int  ipv6only;
+                int ipv6only;
 
                 ipv6only = ls[i].ipv6only;
 
                 if (setsockopt(s, IPPROTO_IPV6, IPV6_V6ONLY,
                                (const void *) &ipv6only, sizeof(int))
-                    == -1)
-                {
+                    == -1) {
                     ngx_log_error(NGX_LOG_EMERG, log, ngx_socket_errno,
                                   "setsockopt(IPV6_V6ONLY) %V failed, ignored",
                                   &ls[i].addr_text);
@@ -519,13 +499,13 @@ ngx_open_listening_sockets(ngx_cycle_t *cycle)
             if (!(ngx_event_flags & NGX_USE_IOCP_EVENT)) {
                 if (ngx_nonblocking(s) == -1) {
                     ngx_log_error(NGX_LOG_EMERG, log, ngx_socket_errno,
-                                  ngx_nonblocking_n " %V failed",
-                                  &ls[i].addr_text);
+                                  ngx_nonblocking_n
+                                          " %V failed", &ls[i].addr_text);
 
                     if (ngx_close_socket(s) == -1) {
                         ngx_log_error(NGX_LOG_EMERG, log, ngx_socket_errno,
-                                      ngx_close_socket_n " %V failed",
-                                      &ls[i].addr_text);
+                                      ngx_close_socket_n
+                                              " %V failed", &ls[i].addr_text);
                     }
 
                     return NGX_ERROR;
@@ -545,7 +525,8 @@ ngx_open_listening_sockets(ngx_cycle_t *cycle)
 
                 if (ngx_close_socket(s) == -1) {
                     ngx_log_error(NGX_LOG_EMERG, log, ngx_socket_errno,
-                                  ngx_close_socket_n " %V failed",
+                                  ngx_close_socket_n
+                                          " %V failed",
                                   &ls[i].addr_text);
                 }
 
@@ -563,11 +544,11 @@ ngx_open_listening_sockets(ngx_cycle_t *cycle)
 #if (NGX_HAVE_UNIX_DOMAIN)
 
             if (ls[i].sockaddr->sa_family == AF_UNIX) {
-                mode_t   mode;
-                u_char  *name;
+                mode_t mode;
+                u_char *name;
 
                 name = ls[i].addr_text.data + sizeof("unix:") - 1;
-                mode = (S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH);
+                mode = (S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
 
                 if (chmod((char *) name, mode) == -1) {
                     ngx_log_error(NGX_LOG_EMERG, cycle->log, ngx_errno,
@@ -577,7 +558,8 @@ ngx_open_listening_sockets(ngx_cycle_t *cycle)
                 if (ngx_test_config) {
                     if (ngx_delete_file(name) == NGX_FILE_ERROR) {
                         ngx_log_error(NGX_LOG_EMERG, cycle->log, ngx_errno,
-                                      ngx_delete_file_n " %s failed", name);
+                                      ngx_delete_file_n
+                                              " %s failed", name);
                     }
                 }
             }
@@ -605,8 +587,8 @@ ngx_open_listening_sockets(ngx_cycle_t *cycle)
 
                 if (ngx_close_socket(s) == -1) {
                     ngx_log_error(NGX_LOG_EMERG, log, ngx_socket_errno,
-                                  ngx_close_socket_n " %V failed",
-                                  &ls[i].addr_text);
+                                  ngx_close_socket_n
+                                          " %V failed", &ls[i].addr_text);
                 }
 
                 if (err != NGX_EADDRINUSE) {
@@ -623,6 +605,7 @@ ngx_open_listening_sockets(ngx_cycle_t *cycle)
             ls[i].listen = 1;
 
             ls[i].fd = s;
+            printf("listen fd:%d\n", s);
         }
 
         if (!failed) {
@@ -647,11 +630,10 @@ ngx_open_listening_sockets(ngx_cycle_t *cycle)
 
 
 void
-ngx_configure_listening_sockets(ngx_cycle_t *cycle)
-{
-    int                        value;
-    ngx_uint_t                 i;
-    ngx_listening_t           *ls;
+ngx_configure_listening_sockets(ngx_cycle_t *cycle) {
+    int value;
+    ngx_uint_t i;
+    ngx_listening_t *ls;
 
 #if (NGX_HAVE_DEFERRED_ACCEPT && defined SO_ACCEPTFILTER)
     struct accept_filter_arg   af;
@@ -665,8 +647,7 @@ ngx_configure_listening_sockets(ngx_cycle_t *cycle)
         if (ls[i].rcvbuf != -1) {
             if (setsockopt(ls[i].fd, SOL_SOCKET, SO_RCVBUF,
                            (const void *) &ls[i].rcvbuf, sizeof(int))
-                == -1)
-            {
+                == -1) {
                 ngx_log_error(NGX_LOG_ALERT, cycle->log, ngx_socket_errno,
                               "setsockopt(SO_RCVBUF, %d) %V failed, ignored",
                               ls[i].rcvbuf, &ls[i].addr_text);
@@ -676,8 +657,7 @@ ngx_configure_listening_sockets(ngx_cycle_t *cycle)
         if (ls[i].sndbuf != -1) {
             if (setsockopt(ls[i].fd, SOL_SOCKET, SO_SNDBUF,
                            (const void *) &ls[i].sndbuf, sizeof(int))
-                == -1)
-            {
+                == -1) {
                 ngx_log_error(NGX_LOG_ALERT, cycle->log, ngx_socket_errno,
                               "setsockopt(SO_SNDBUF, %d) %V failed, ignored",
                               ls[i].sndbuf, &ls[i].addr_text);
@@ -689,8 +669,7 @@ ngx_configure_listening_sockets(ngx_cycle_t *cycle)
 
             if (setsockopt(ls[i].fd, SOL_SOCKET, SO_KEEPALIVE,
                            (const void *) &value, sizeof(int))
-                == -1)
-            {
+                == -1) {
                 ngx_log_error(NGX_LOG_ALERT, cycle->log, ngx_socket_errno,
                               "setsockopt(SO_KEEPALIVE, %d) %V failed, ignored",
                               value, &ls[i].addr_text);
@@ -708,8 +687,7 @@ ngx_configure_listening_sockets(ngx_cycle_t *cycle)
 
             if (setsockopt(ls[i].fd, IPPROTO_TCP, TCP_KEEPIDLE,
                            (const void *) &value, sizeof(int))
-                == -1)
-            {
+                == -1) {
                 ngx_log_error(NGX_LOG_ALERT, cycle->log, ngx_socket_errno,
                               "setsockopt(TCP_KEEPIDLE, %d) %V failed, ignored",
                               value, &ls[i].addr_text);
@@ -725,19 +703,17 @@ ngx_configure_listening_sockets(ngx_cycle_t *cycle)
 
             if (setsockopt(ls[i].fd, IPPROTO_TCP, TCP_KEEPINTVL,
                            (const void *) &value, sizeof(int))
-                == -1)
-            {
+                == -1) {
                 ngx_log_error(NGX_LOG_ALERT, cycle->log, ngx_socket_errno,
-                             "setsockopt(TCP_KEEPINTVL, %d) %V failed, ignored",
-                             value, &ls[i].addr_text);
+                              "setsockopt(TCP_KEEPINTVL, %d) %V failed, ignored",
+                              value, &ls[i].addr_text);
             }
         }
 
         if (ls[i].keepcnt) {
             if (setsockopt(ls[i].fd, IPPROTO_TCP, TCP_KEEPCNT,
                            (const void *) &ls[i].keepcnt, sizeof(int))
-                == -1)
-            {
+                == -1) {
                 ngx_log_error(NGX_LOG_ALERT, cycle->log, ngx_socket_errno,
                               "setsockopt(TCP_KEEPCNT, %d) %V failed, ignored",
                               ls[i].keepcnt, &ls[i].addr_text);
@@ -763,8 +739,7 @@ ngx_configure_listening_sockets(ngx_cycle_t *cycle)
         if (ls[i].fastopen != -1) {
             if (setsockopt(ls[i].fd, IPPROTO_TCP, TCP_FASTOPEN,
                            (const void *) &ls[i].fastopen, sizeof(int))
-                == -1)
-            {
+                == -1) {
                 ngx_log_error(NGX_LOG_ALERT, cycle->log, ngx_socket_errno,
                               "setsockopt(TCP_FASTOPEN, %d) %V failed, ignored",
                               ls[i].fastopen, &ls[i].addr_text);
@@ -868,12 +843,10 @@ ngx_configure_listening_sockets(ngx_cycle_t *cycle)
             }
 
             if (setsockopt(ls[i].fd, IPPROTO_TCP, TCP_DEFER_ACCEPT,
-                           &value, sizeof(int))
-                == -1)
-            {
+                           &value, sizeof(int)) == -1) {
                 ngx_log_error(NGX_LOG_ALERT, cycle->log, ngx_socket_errno,
                               "setsockopt(TCP_DEFER_ACCEPT, %d) for %V failed, "
-                              "ignored",
+                                      "ignored",
                               value, &ls[i].addr_text);
 
                 continue;
@@ -911,17 +884,14 @@ ngx_configure_listening_sockets(ngx_cycle_t *cycle)
 
         if (ls[i].wildcard
             && ls[i].type == SOCK_DGRAM
-            && ls[i].sockaddr->sa_family == AF_INET)
-        {
+            && ls[i].sockaddr->sa_family == AF_INET) {
             value = 1;
 
             if (setsockopt(ls[i].fd, IPPROTO_IP, IP_PKTINFO,
-                           (const void *) &value, sizeof(int))
-                == -1)
-            {
+                           (const void *) &value, sizeof(int)) == -1) {
                 ngx_log_error(NGX_LOG_ALERT, cycle->log, ngx_socket_errno,
                               "setsockopt(IP_PKTINFO) "
-                              "for %V failed, ignored",
+                                      "for %V failed, ignored",
                               &ls[i].addr_text);
             }
         }
@@ -932,17 +902,15 @@ ngx_configure_listening_sockets(ngx_cycle_t *cycle)
 
         if (ls[i].wildcard
             && ls[i].type == SOCK_DGRAM
-            && ls[i].sockaddr->sa_family == AF_INET6)
-        {
+            && ls[i].sockaddr->sa_family == AF_INET6) {
             value = 1;
 
             if (setsockopt(ls[i].fd, IPPROTO_IPV6, IPV6_RECVPKTINFO,
                            (const void *) &value, sizeof(int))
-                == -1)
-            {
+                == -1) {
                 ngx_log_error(NGX_LOG_ALERT, cycle->log, ngx_socket_errno,
                               "setsockopt(IPV6_RECVPKTINFO) "
-                              "for %V failed, ignored",
+                                      "for %V failed, ignored",
                               &ls[i].addr_text);
             }
         }
@@ -955,11 +923,10 @@ ngx_configure_listening_sockets(ngx_cycle_t *cycle)
 
 
 void
-ngx_close_listening_sockets(ngx_cycle_t *cycle)
-{
-    ngx_uint_t         i;
-    ngx_listening_t   *ls;
-    ngx_connection_t  *c;
+ngx_close_listening_sockets(ngx_cycle_t *cycle) {
+    ngx_uint_t i;
+    ngx_listening_t *ls;
+    ngx_connection_t *c;
 
     if (ngx_event_flags & NGX_USE_IOCP_EVENT) {
         return;
@@ -1000,20 +967,21 @@ ngx_close_listening_sockets(ngx_cycle_t *cycle)
 
         if (ngx_close_socket(ls[i].fd) == -1) {
             ngx_log_error(NGX_LOG_EMERG, cycle->log, ngx_socket_errno,
-                          ngx_close_socket_n " %V failed", &ls[i].addr_text);
+                          ngx_close_socket_n
+                                  " %V failed", &ls[i].addr_text);
         }
 
 #if (NGX_HAVE_UNIX_DOMAIN)
 
         if (ls[i].sockaddr->sa_family == AF_UNIX
             && ngx_process <= NGX_PROCESS_MASTER
-            && ngx_new_binary == 0)
-        {
+            && ngx_new_binary == 0) {
             u_char *name = ls[i].addr_text.data + sizeof("unix:") - 1;
 
             if (ngx_delete_file(name) == NGX_FILE_ERROR) {
                 ngx_log_error(NGX_LOG_EMERG, cycle->log, ngx_socket_errno,
-                              ngx_delete_file_n " %s failed", name);
+                              ngx_delete_file_n
+                                      " %s failed", name);
             }
         }
 
@@ -1027,18 +995,17 @@ ngx_close_listening_sockets(ngx_cycle_t *cycle)
 
 
 ngx_connection_t *
-ngx_get_connection(ngx_socket_t s, ngx_log_t *log)
-{
-    ngx_uint_t         instance;
-    ngx_event_t       *rev, *wev;
-    ngx_connection_t  *c;
+ngx_get_connection(ngx_socket_t s, ngx_log_t *log) {
+    ngx_uint_t instance;
+    ngx_event_t *rev, *wev;
+    ngx_connection_t *c;
 
     /* disable warning: Win32 SOCKET is u_int while UNIX socket is int */
 
     if (ngx_cycle->files && (ngx_uint_t) s >= ngx_cycle->files_n) {
         ngx_log_error(NGX_LOG_ALERT, log, 0,
                       "the new socket has number %d, "
-                      "but only %ui files are available",
+                              "but only %ui files are available",
                       s, ngx_cycle->files_n);
         return NULL;
     }
@@ -1054,11 +1021,10 @@ ngx_get_connection(ngx_socket_t s, ngx_log_t *log)
         ngx_log_error(NGX_LOG_ALERT, log, 0,
                       "%ui worker_connections are not enough",
                       ngx_cycle->connection_n);
-
         return NULL;
     }
 
-    ngx_cycle->free_connections = c->data;
+    ngx_cycle->free_connections = c->data; //next
     ngx_cycle->free_connection_n--;
 
     if (ngx_cycle->files && ngx_cycle->files[s] == NULL) {
@@ -1088,7 +1054,6 @@ ngx_get_connection(ngx_socket_t s, ngx_log_t *log)
 
     rev->data = c;
     wev->data = c;
-
     wev->write = 1;
 
     return c;
@@ -1096,8 +1061,7 @@ ngx_get_connection(ngx_socket_t s, ngx_log_t *log)
 
 
 void
-ngx_free_connection(ngx_connection_t *c)
-{
+ngx_free_connection(ngx_connection_t *c) {
     c->data = ngx_cycle->free_connections;
     ngx_cycle->free_connections = c;
     ngx_cycle->free_connection_n++;
@@ -1109,11 +1073,10 @@ ngx_free_connection(ngx_connection_t *c)
 
 
 void
-ngx_close_connection(ngx_connection_t *c)
-{
-    ngx_err_t     err;
-    ngx_uint_t    log_error, level;
-    ngx_socket_t  fd;
+ngx_close_connection(ngx_connection_t *c) {
+    ngx_err_t err;
+    ngx_uint_t log_error, level;
+    ngx_socket_t fd;
 
     if (c->fd == (ngx_socket_t) -1) {
         ngx_log_error(NGX_LOG_ALERT, c->log, 0, "connection already closed");
@@ -1175,30 +1138,30 @@ ngx_close_connection(ngx_connection_t *c)
 
             switch (log_error) {
 
-            case NGX_ERROR_INFO:
-                level = NGX_LOG_INFO;
-                break;
+                case NGX_ERROR_INFO:
+                    level = NGX_LOG_INFO;
+                    break;
 
-            case NGX_ERROR_ERR:
-                level = NGX_LOG_ERR;
-                break;
+                case NGX_ERROR_ERR:
+                    level = NGX_LOG_ERR;
+                    break;
 
-            default:
-                level = NGX_LOG_CRIT;
+                default:
+                    level = NGX_LOG_CRIT;
             }
 
         } else {
             level = NGX_LOG_CRIT;
         }
 
-        ngx_log_error(level, c->log, err, ngx_close_socket_n " %d failed", fd);
+        ngx_log_error(level, c->log, err, ngx_close_socket_n
+                " %d failed", fd);
     }
 }
 
 
 void
-ngx_reusable_connection(ngx_connection_t *c, ngx_uint_t reusable)
-{
+ngx_reusable_connection(ngx_connection_t *c, ngx_uint_t reusable) {
     ngx_log_debug1(NGX_LOG_DEBUG_CORE, c->log, 0,
                    "reusable connection: %ui", reusable);
 
@@ -1217,7 +1180,7 @@ ngx_reusable_connection(ngx_connection_t *c, ngx_uint_t reusable)
         /* need cast as ngx_cycle is volatile */
 
         ngx_queue_insert_head(
-            (ngx_queue_t *) &ngx_cycle->reusable_connections_queue, &c->queue);
+                (ngx_queue_t *) &ngx_cycle->reusable_connections_queue, &c->queue);
         ngx_cycle->reusable_connections_n++;
 
 #if (NGX_STAT_STUB)
@@ -1228,11 +1191,10 @@ ngx_reusable_connection(ngx_connection_t *c, ngx_uint_t reusable)
 
 
 static void
-ngx_drain_connections(ngx_cycle_t *cycle)
-{
-    ngx_uint_t         i, n;
-    ngx_queue_t       *q;
-    ngx_connection_t  *c;
+ngx_drain_connections(ngx_cycle_t *cycle) {
+    ngx_uint_t i, n;
+    ngx_queue_t *q;
+    ngx_connection_t *c;
 
     n = ngx_max(ngx_min(32, cycle->reusable_connections_n / 8), 1);
 
@@ -1254,10 +1216,9 @@ ngx_drain_connections(ngx_cycle_t *cycle)
 
 
 void
-ngx_close_idle_connections(ngx_cycle_t *cycle)
-{
-    ngx_uint_t         i;
-    ngx_connection_t  *c;
+ngx_close_idle_connections(ngx_cycle_t *cycle) {
+    ngx_uint_t i;
+    ngx_connection_t *c;
 
     c = cycle->connections;
 
@@ -1275,15 +1236,14 @@ ngx_close_idle_connections(ngx_cycle_t *cycle)
 
 ngx_int_t
 ngx_connection_local_sockaddr(ngx_connection_t *c, ngx_str_t *s,
-    ngx_uint_t port)
-{
-    socklen_t             len;
-    ngx_uint_t            addr;
-    ngx_sockaddr_t        sa;
-    struct sockaddr_in   *sin;
+                              ngx_uint_t port) {
+    socklen_t len;
+    ngx_uint_t addr;
+    ngx_sockaddr_t sa;
+    struct sockaddr_in *sin;
 #if (NGX_HAVE_INET6)
-    ngx_uint_t            i;
-    struct sockaddr_in6  *sin6;
+    ngx_uint_t i;
+    struct sockaddr_in6 *sin6;
 #endif
 
     addr = 0;
@@ -1292,26 +1252,26 @@ ngx_connection_local_sockaddr(ngx_connection_t *c, ngx_str_t *s,
         switch (c->local_sockaddr->sa_family) {
 
 #if (NGX_HAVE_INET6)
-        case AF_INET6:
-            sin6 = (struct sockaddr_in6 *) c->local_sockaddr;
+            case AF_INET6:
+                sin6 = (struct sockaddr_in6 *) c->local_sockaddr;
 
-            for (i = 0; addr == 0 && i < 16; i++) {
-                addr |= sin6->sin6_addr.s6_addr[i];
-            }
+                for (i = 0; addr == 0 && i < 16; i++) {
+                    addr |= sin6->sin6_addr.s6_addr[i];
+                }
 
-            break;
+                break;
 #endif
 
 #if (NGX_HAVE_UNIX_DOMAIN)
-        case AF_UNIX:
-            addr = 1;
-            break;
+            case AF_UNIX:
+                addr = 1;
+                break;
 #endif
 
-        default: /* AF_INET */
-            sin = (struct sockaddr_in *) c->local_sockaddr;
-            addr = sin->sin_addr.s_addr;
-            break;
+            default: /* AF_INET */
+                sin = (struct sockaddr_in *) c->local_sockaddr;
+                addr = sin->sin_addr.s_addr;
+                break;
         }
     }
 
@@ -1346,9 +1306,8 @@ ngx_connection_local_sockaddr(ngx_connection_t *c, ngx_str_t *s,
 
 
 ngx_int_t
-ngx_tcp_nodelay(ngx_connection_t *c)
-{
-    int  tcp_nodelay;
+ngx_tcp_nodelay(ngx_connection_t *c) {
+    int tcp_nodelay;
 
     if (c->tcp_nodelay != NGX_TCP_NODELAY_UNSET) {
         return NGX_OK;
@@ -1360,8 +1319,7 @@ ngx_tcp_nodelay(ngx_connection_t *c)
 
     if (setsockopt(c->fd, IPPROTO_TCP, TCP_NODELAY,
                    (const void *) &tcp_nodelay, sizeof(int))
-        == -1)
-    {
+        == -1) {
 #if (NGX_SOLARIS)
         if (c->log_error == NGX_ERROR_INFO) {
 
@@ -1389,18 +1347,16 @@ ngx_tcp_nodelay(ngx_connection_t *c)
 
 
 ngx_int_t
-ngx_connection_error(ngx_connection_t *c, ngx_err_t err, char *text)
-{
-    ngx_uint_t  level;
+ngx_connection_error(ngx_connection_t *c, ngx_err_t err, char *text) {
+    ngx_uint_t level;
 
     /* Winsock may return NGX_ECONNABORTED instead of NGX_ECONNRESET */
 
     if ((err == NGX_ECONNRESET
 #if (NGX_WIN32)
-         || err == NGX_ECONNABORTED
+                || err == NGX_ECONNABORTED
 #endif
-        ) && c->log_error == NGX_ERROR_IGNORE_ECONNRESET)
-    {
+        ) && c->log_error == NGX_ERROR_IGNORE_ECONNRESET) {
         return 0;
     }
 
@@ -1412,29 +1368,28 @@ ngx_connection_error(ngx_connection_t *c, ngx_err_t err, char *text)
 
     if (err == 0
         || err == NGX_ECONNRESET
-#if (NGX_WIN32)
+        #if (NGX_WIN32)
         || err == NGX_ECONNABORTED
-#else
+        #else
         || err == NGX_EPIPE
-#endif
+        #endif
         || err == NGX_ENOTCONN
         || err == NGX_ETIMEDOUT
         || err == NGX_ECONNREFUSED
         || err == NGX_ENETDOWN
         || err == NGX_ENETUNREACH
         || err == NGX_EHOSTDOWN
-        || err == NGX_EHOSTUNREACH)
-    {
+        || err == NGX_EHOSTUNREACH) {
         switch (c->log_error) {
 
-        case NGX_ERROR_IGNORE_EINVAL:
-        case NGX_ERROR_IGNORE_ECONNRESET:
-        case NGX_ERROR_INFO:
-            level = NGX_LOG_INFO;
-            break;
+            case NGX_ERROR_IGNORE_EINVAL:
+            case NGX_ERROR_IGNORE_ECONNRESET:
+            case NGX_ERROR_INFO:
+                level = NGX_LOG_INFO;
+                break;
 
-        default:
-            level = NGX_LOG_ERR;
+            default:
+                level = NGX_LOG_ERR;
         }
 
     } else {

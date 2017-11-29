@@ -1,7 +1,23 @@
 #define NGX_CONFIGURE ""
 
+
 #ifndef NGX_COMPILER
 #define NGX_COMPILER  "gcc 7.1.1 20170622 (Red Hat 7.1.1-3) (GCC) "
+#endif
+
+
+#ifndef NGX_OPENSSL
+#define NGX_OPENSSL  1
+#endif
+
+
+#ifndef NGX_SSL
+#define NGX_SSL  1
+#endif
+
+
+#ifndef NGX_HTTP_SSL
+#define NGX_HTTP_SSL  1
 #endif
 
 

@@ -18,7 +18,9 @@ ngx_atomic_int_t      ngx_random_number = 123456;
 
 
 ngx_int_t
-ngx_get_full_name(ngx_pool_t *pool, ngx_str_t *prefix, ngx_str_t *name)
+ngx_get_full_name(ngx_pool_t *pool,
+                  ngx_str_t *prefix,
+                  ngx_str_t *name)
 {
     size_t      len;
     u_char     *p, *n;
